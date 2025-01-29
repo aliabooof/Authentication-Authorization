@@ -21,7 +21,7 @@ namespace Authentication___Authorization.Controllers
         {
             return View();
         }
-        public async Task<IActionResult> Register()
+        public IActionResult Register()
         {
 
 
@@ -44,14 +44,54 @@ namespace Authentication___Authorization.Controllers
                 BirthDate = viewModel.BirthDate,
             };
             var result = await _userManager.CreateAsync(user,viewModel.Password);
-            if (!result.Succeeded)
+            if (result.Succeeded)
+            {
+                return RedirectToAction(nameof(Login));
+            }
+                return View(viewModel);
+        }
+
+
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        [AutoValidateAntiforgeryToken]
+        public async Task<IActionResult> Login(LoginViewModel viewModel)
+        {
+            if (!ModelState.IsValid)
             {
                 return View(viewModel);
             }
-                return RedirectToAction(nameof(Index));
+
+            var user = await _userManager.FindByEmailAsync(viewModel.Email);
+            
+            if(user == null)
+            {
+                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+                return View(viewModel);
+            }
+            
+            var flag = await _signInManager.CheckPasswordSignInAsync(user, viewModel.Password,false);
+
+            if (flag.Succeeded)
+            {
+                var result = await _signInManager.PasswordSignInAsync(user,viewModel.Password,false,false);
+                if (result.Succeeded)
+                    return RedirectToAction(nameof(Index),"Home");
+            }
+            ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+            return View(viewModel);
+
         }
-          
-           
-        
+
+        public async Task<IActionResult> Logout()
+        {
+            await _signInManager.SignOutAsync();
+            return RedirectToAction(nameof(Login) );
+        }
     }
 }
+
