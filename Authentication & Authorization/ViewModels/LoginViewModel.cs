@@ -12,5 +12,7 @@ namespace Authentication___Authorization.ViewModels
         [Required]
         [DataType(DataType.Password)]
         public string Password { get; set; } = default!;
+
+        public bool RememberMe { get; set; }
     }
 }

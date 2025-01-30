@@ -58,7 +58,7 @@ namespace Authentication___Authorization.Controllers
         }
 
         [HttpPost]
-        [AutoValidateAntiforgeryToken]
+        //[AutoValidateAntiforgeryToken]
         public async Task<IActionResult> Login(LoginViewModel viewModel)
         {
             if (!ModelState.IsValid)
@@ -78,7 +78,7 @@ namespace Authentication___Authorization.Controllers
 
             if (flag.Succeeded)
             {
-                var result = await _signInManager.PasswordSignInAsync(user,viewModel.Password,false,false);
+                var result = await _signInManager.PasswordSignInAsync(user,viewModel.Password,viewModel.RememberMe,false);
                 if (result.Succeeded)
                     return RedirectToAction(nameof(Index),"Home");
             }
@@ -90,7 +90,7 @@ namespace Authentication___Authorization.Controllers
         public async Task<IActionResult> Logout()
         {
             await _signInManager.SignOutAsync();
-            return RedirectToAction(nameof(Login) );
+            return RedirectToAction(nameof(Login));
         }
     }
 }
