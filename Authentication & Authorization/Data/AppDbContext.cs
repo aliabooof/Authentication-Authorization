@@ -9,5 +9,6 @@ namespace Authentication___Authorization.Data
         public AppDbContext(DbContextOptions options) : base(options)
         {
         }
+        
     }
 }
